@@ -117,7 +117,7 @@ class Graph(object):
                 
     def get_adjacency(self):
         """
-        Thi function generates and returns the adjacency matrix of the graph
+        This function generates and returns the adjacency matrix of the graph
 
         Returns
         -------
