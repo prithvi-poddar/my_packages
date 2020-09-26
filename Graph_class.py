@@ -7,6 +7,7 @@ Created on Fri Sep  4 13:03:43 2020
 """
 
 import numpy as np
+import queue
 
 
 class Graph(object):
@@ -117,7 +118,7 @@ class Graph(object):
                 
     def get_adjacency(self):
         """
-        This function generates and returns the adjacency matrix of the graph
+        Thi function generates and returns the adjacency matrix of the graph
 
         Returns
         -------
@@ -131,7 +132,7 @@ class Graph(object):
             if (len(edge) == 2):
                 idx_1 = nodes.index(edge[0])
                 idx_2 = nodes.index(edge[1])
-                adj_mat[idx_1][idx_2] = 1
+                adj_mat[idx_2][idx_1] = 1
             elif (len(edge) == 1):
                 idx_1 = nodes.index(edge[0])
                 adj_mat[idx_1][idx_1] = 1
@@ -189,7 +190,72 @@ class Graph(object):
                 if (self.DFS_check(node, discovered, check) == True):
                     return True
         return False
-   
+    
+    def min_dist(self, n1, n2):
+        """
+        This function uses Breadth First Search (BFS) on the graph to find the
+        shortest distance between 2 nodes
+
+        Parameters
+        ----------
+        n1 : start node
+            
+        n2 : end node
+            
+
+        Returns
+        -------
+        Minimum distance between n1 and n2
+
+        """
+        # visited[n] for keeping track  
+        # of visited node in BFS  
+        visited = [0] * len(self.nodes())
+        
+        # Initialize distances as 0  
+        distance = [0] * len(self.nodes())
+        Q = queue.Queue()
+        distance[self.nodes().index(n1)] = 0
+        
+        Q.put(n1)
+        visited[self.nodes().index(n1)] = True
+        while (not Q.empty()):
+            x = Q.get()
+            
+            for neighbor in self.__graph_dict[x]:
+                if (visited[self.nodes().index(neighbor)]):
+                    continue
+                
+                distance[self.nodes().index(neighbor)] = distance[self.nodes().index(x)] + 1
+                Q.put(neighbor)
+                visited[self.nodes().index(neighbor)] = 1
+        
+        return distance[self.nodes().index(n2)]
+    
+    def get_closeness_centrality(self):
+        """
+        This function uses the min_dist function to calculate the minimum distance
+        between nodes and returns a dictionary of the closeness centrality 
+        of all the nodes
+
+        Returns
+        -------
+        cl_dict : dictionary
+            contains closeness centrality of all nodes
+
+        """
+        n = len(self.nodes()) - 1
+        cl_dict = {}
+        
+        for i in self.nodes():
+            d_ij = 0
+            for j in self.nodes():
+                d_ij += self.min_dist(i, j)
+                
+            cl_dict[i] = n/d_ij
+            
+        return cl_dict
+    
     def summary(self):
         """
         This function generates a summary of the graph 
